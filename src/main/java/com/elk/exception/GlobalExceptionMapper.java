@@ -8,6 +8,6 @@ import jakarta.ws.rs.ext.Provider;
 public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
     @Override
     public Response toResponse(Exception exception) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(exception.getMessage()).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(exception.getCause().getMessage()).build();
     }
 }

@@ -4,7 +4,7 @@
 <configuration>
     <properties resource='application.properties'/>
     <typeAliases>
-        <typeAlias type='com.example.noonmybatis.model.User' alias='User'/>
+        <typeAlias type='com.elk.model.Product' alias='Product'/>
 
     </typeAliases>
     <environments default='development'>
@@ -19,6 +19,6 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource='com/example/noonmybatis/mappers/UserMapper.xml'/>
+       <mapper resource='com/elk/mappers/ProductMapper.xml'/>
     </mappers>
 </configuration>

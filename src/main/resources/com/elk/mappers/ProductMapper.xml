@@ -3,8 +3,27 @@
         'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
 
 <mapper namespace='com.elk.mappers.ProductMapper'>
-    <insert id="saveProduct" parameterType="com.elk.model.Product" useGeneratedKeys="true">
-        INSERT INTO  products (name,price) values (#{name},#{price})
+    <resultMap id="getProduct" type="Product">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+    </resultMap>
+    <insert id="saveProduct" parameterType="com.elk.model.Product">
+        INSERT INTO products (id, name, price)
+        values (#{id}, #{name}, #{price})
     </insert>
+
+    <delete id="deleteProduct" parameterType="Long">
+        delete
+        from products
+        where id = #{id}
+    </delete>
+
+    <update id="updateProduct" parameterType="com.elk.model.Product">
+        UPDATE products SET
+       <if test="name !=null">name = #{name},</if>
+       <if test="price !=null">price = #{price}</if>
+        WHERE id = #{id}
+    </update>
 
 </mapper>

@@ -1,18 +1,15 @@
 package com.elk.exception;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-@ApplicationScoped
-public class NotSavedExceptionMapper extends Exception {
-    public NotSavedExceptionMapper(String message) {
+public class NotSavedException extends Exception {
+    public NotSavedException(String message) {
         super(message);
     }
 
-    public NotSavedExceptionMapper() {
+    public NotSavedException() {
         super();
     }
 
-    public NotSavedExceptionMapper(Throwable cause) {
+    public NotSavedException(Throwable cause) {
         super(cause);
     }
 }
