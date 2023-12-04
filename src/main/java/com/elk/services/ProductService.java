@@ -4,7 +4,6 @@ package com.elk.services;
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.elk.Utils.Utils;
 import com.elk.exception.NotSavedException;
@@ -32,7 +31,7 @@ public class ProductService {
     private ElasticsearchClient elasticsearchClient;
     @Inject
     private ElasticsearchAsyncClient elasticsearchAsyncClient;
-    private static final String PRODUCT_INDEX = "products";
+    private static final String PRODUCT_INDEX = "index_products";
 
     public long saveProduct(Product product) throws Exception {
         long uniqueId = Utils.uniqueCurrentTimeNS();
@@ -44,11 +43,7 @@ public class ProductService {
                     return false;
                 });
 
-        CompletableFuture<Boolean> saveInSecondaryDb = saveInSecondaryDb(product)
-                .exceptionally(throwable -> {
-                    logger.log(Level.INFO, "Error while saving data in elastic search");
-                    return false;
-                });
+        CompletableFuture<Boolean> saveInSecondaryDb = saveInSecondaryDb(product);
 
         CompletableFuture.allOf(saveInPrimaryDb, saveInSecondaryDb).join();
         if (saveInSecondaryDb.get() && saveInSecondaryDb.get()) {
@@ -64,7 +59,6 @@ public class ProductService {
         return CompletableFuture
                 .supplyAsync(() -> {
                             ProductMapper productMapper = session.getMapper(ProductMapper.class);
-//                            session.insert("com.elk.mappers.ProductMapper.saveProduct",product);
                             productMapper.saveProduct(product);
                             return true;
                         }
@@ -77,20 +71,20 @@ public class ProductService {
 
         return CompletableFuture
                 .supplyAsync(() -> {
-                            try {
-                                elasticsearchClient.index(data -> data
-                                        .index(PRODUCT_INDEX)
-                                        .id(String.valueOf(product.getId()))
-                                        .document(product)
-                                );
-                                return true;
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                ).exceptionally(throwable -> {
+                    try {
+                        elasticsearchClient.index(data -> data
+                                .index(PRODUCT_INDEX)
+                                .id(String.valueOf(product.getId()))
+                                .document(product)
+                        );
+                    } catch (IOException e) {
+                        logger.log(Level.INFO, "Error while saving data in elastic search");
+                        return false;
+                    }
+                    return true;
+                }).exceptionally(throwable -> {
                     logger.log(Level.INFO, "Error while saving data in elastic search");
-                    throw new RuntimeException();
+                    return false;
                 });
     }
 
@@ -135,12 +129,12 @@ public class ProductService {
                 });
     }
 
-    public CompletableFuture<Boolean> updateInSecondaryDb(Product product) throws Exception {
+    public CompletableFuture<Boolean> updateInSecondaryDb(Product product) {
 
         return CompletableFuture
                 .supplyAsync(() -> {
                             try {
-                                UpdateResponse<Product> update = elasticsearchClient.update(u -> u.index(PRODUCT_INDEX)
+                                elasticsearchClient.update(u -> u.index(PRODUCT_INDEX)
                                         .id(String.valueOf(product.getId()))
                                         .upsert(product)
                                         .doc(product), Product.class);
@@ -223,7 +217,6 @@ public class ProductService {
         return CompletableFuture
                 .supplyAsync(() -> {
                             ProductMapper productMapper = session.getMapper(ProductMapper.class);
-//                            session.insert("com.elk.mappers.ProductMapper.saveProduct",product);
                             productMapper.deleteProduct(id);
                             return true;
                         }
