@@ -4,13 +4,11 @@ package com.elk.services;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.elk.Utils.Utils;
+import com.elk.Utils.UniqueIdUtils;
 import com.elk.exception.FailedToSaveExeption;
 import com.elk.mappers.CustomerMapper;
 import com.elk.model.Address;
 import com.elk.model.Customer;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
@@ -56,7 +54,7 @@ public class CustomerService {
     }
 
     public long saveCustomer(Customer customer) throws Exception {
-        long uniqueId = Utils.uniqueCurrentTimeNS();
+        long uniqueId = UniqueIdUtils.uniqueCurrentTimeNS();
         customer.setId(uniqueId);
 
         Address isAddressExits = addressService.checkAddress(customer.getAddress());
@@ -81,7 +79,7 @@ public class CustomerService {
     private CompletableFuture<Boolean> saveInSecondaryDb(Customer customer) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                 elasticsearchClient.index(data -> data
+                elasticsearchClient.index(data -> data
                         .index(CUSTOMER_INDEX)
                         .id(String.valueOf(customer.getId()))
                         .document(customer)
@@ -106,5 +104,16 @@ public class CustomerService {
         session.rollback();
         elasticsearchClient.delete(builder -> builder.index(CUSTOMER_INDEX)
                 .id(String.valueOf(uniqueId)));
+    }
+
+    public Long deleteCustomer(Long id) {
+        Long deletedItems;
+        try {
+            CustomerMapper customerMapper = sqlSession.getMapper(CustomerMapper.class);
+            deletedItems = customerMapper.deleteCustomer(id);
+        } catch (Exception exception) {
+            throw new NotFoundException("Unable to delete Customer with id " + id);
+        }
+        return deletedItems;
     }
 }

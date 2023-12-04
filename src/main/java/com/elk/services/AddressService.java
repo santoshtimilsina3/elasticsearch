@@ -1,6 +1,6 @@
 package com.elk.services;
 
-import com.elk.Utils.Utils;
+import com.elk.Utils.UniqueIdUtils;
 import com.elk.exception.FailedToSaveExeption;
 import com.elk.mappers.AddressMapper;
 import com.elk.model.Address;
@@ -9,9 +9,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import org.apache.ibatis.session.SqlSession;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RequestScoped
@@ -23,7 +20,7 @@ public class AddressService {
     private SqlSession sqlSession;
 
     public Long createAddress(Address address) throws FailedToSaveExeption {
-        long uniqueId = Utils.uniqueCurrentTimeNS();
+        long uniqueId = UniqueIdUtils.uniqueCurrentTimeNS();
         address.setId(uniqueId);
         try {
             AddressMapper addressMapper = sqlSession.getMapper(AddressMapper.class);

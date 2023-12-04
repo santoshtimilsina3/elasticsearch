@@ -43,7 +43,7 @@ public class CustomerController {
     public Response deleteCustomer(@NotNull Long id){
         return Response.ok(GenericResponse.builder()
                 .statusCode(HttpStatus.SC_OK)
-                .message("Customer deleted with id "+ customerService.delete)
+                .message("Customer deleted with id "+ customerService.deleteCustomer(id))
         ).build();
     }
 }

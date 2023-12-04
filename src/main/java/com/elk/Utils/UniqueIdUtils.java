@@ -2,7 +2,7 @@ package com.elk.Utils;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Utils {
+public class UniqueIdUtils {
     private static final AtomicLong LAST_TIME_MS = new AtomicLong();
     public static long uniqueCurrentTimeNS() {
         long now = System.nanoTime();

@@ -6,4 +6,7 @@
         insert into customer(id, name, password, address_id)
         values (#{id}, #{name}, #{password}, #{address.id})
     </insert>
+    <delete id="deleteById" parameterType="int">
+        DELETE from customer where id = #{id}
+    </delete>
 </mapper>

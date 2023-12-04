@@ -5,7 +5,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.elk.Utils.Utils;
+import com.elk.Utils.UniqueIdUtils;
 import com.elk.exception.NotSavedException;
 import com.elk.mappers.ProductMapper;
 import com.elk.model.Product;
@@ -34,7 +34,7 @@ public class ProductService {
     private static final String PRODUCT_INDEX = "index_products";
 
     public long saveProduct(Product product) throws Exception {
-        long uniqueId = Utils.uniqueCurrentTimeNS();
+        long uniqueId = UniqueIdUtils.uniqueCurrentTimeNS();
         product.setId(uniqueId);
 
         CompletableFuture<Boolean> saveInPrimaryDb = saveInPrimaryDb(product)
