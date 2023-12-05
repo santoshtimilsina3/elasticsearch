@@ -48,7 +48,7 @@ public class CustomerService {
             );
             allCustomers = search.hits().hits().stream().map(Hit::source).collect(Collectors.toList());
         } catch (Exception exception) {
-            logger.log(Level.INFO, "Unable to find customers");
+            logger.log(Level.INFO, "Unable to find customers "+ exception.getMessage());
         }
         return allCustomers;
     }

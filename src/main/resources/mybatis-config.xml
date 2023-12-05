@@ -8,6 +8,7 @@
         <typeAlias type='com.elk.model.Address' alias='Address'/>
         <typeAlias type='com.elk.model.Customer' alias='Customer'/>
         <typeAlias type='com.elk.model.Department' alias='Department'/>
+        <typeAlias type='com.elk.model.Employee' alias='Employee'/>
 
     </typeAliases>
     <environments default='development'>
@@ -26,5 +27,6 @@
         <mapper resource='com/elk/mappers/AddressMapper.xml'/>
         <mapper resource='com/elk/mappers/CustomerMapper.xml'/>
         <mapper resource='com/elk/mappers/DepartmentMapper.xml'/>
+        <mapper resource='com/elk/mappers/EmployeeMapper.xml'/>
     </mappers>
 </configuration>

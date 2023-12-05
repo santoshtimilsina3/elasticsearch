@@ -1,28 +1,28 @@
 package com.elk.model;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
 
-@Getter
-@Setter
-public class Department {
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Employee {
     private Long id;
+    @NotNull
     private String name;
+    private String email;
     private LocalDate createdAt;
-    private List<Employee> employees;
+    private Long departmentId;
+    private Long phone;
 
-    @PostConstruct
-    public void init() {
-        this.setCreatedAt(LocalDate.now());
-    }
 }

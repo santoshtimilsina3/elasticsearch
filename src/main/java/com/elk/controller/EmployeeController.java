@@ -1,10 +1,8 @@
 package com.elk.controller;
 
-import com.elk.exception.FailedToSaveExeption;
-import com.elk.model.Address;
+import com.elk.model.Employee;
 import com.elk.requestresponse.GenericResponse;
-import com.elk.services.AddressService;
-import jakarta.enterprise.context.RequestScoped;
+import com.elk.services.EmployeeService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -13,18 +11,18 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.http.HttpStatus;
 
-@Path("/address")
-@RequestScoped
-public class AddressController {
+@Path("/employee")
+public class EmployeeController {
+
     @Inject
-    private AddressService addressService;
+    private EmployeeService employeeService;
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createAddress(Address address) throws FailedToSaveExeption {
+    public Response saveEmployee(Employee employee) throws Exception {
         return Response.ok(GenericResponse.builder()
                 .statusCode(HttpStatus.SC_CREATED)
-                .message("Address created successfully with id " + addressService.createAddress(address))
+                .message("Employee Created with id " + employeeService.saveEmployee(employee))
         ).build();
     }
 }
