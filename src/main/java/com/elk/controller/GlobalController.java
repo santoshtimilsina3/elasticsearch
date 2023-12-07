@@ -29,4 +29,14 @@ public class GlobalController {
                 .data(globalQueriesService.searchInApplication(text))).build();
 //        return Response.ok(globalQueriesService.searchInApplication(text), MediaType.APPLICATION_JSON).build();
     }
+
+    @GET
+    @Path("searchAll/typos/{text}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchTypos(@PathParam("text") String text)  {
+        return Response.ok(GenericResponse.builder()
+                .statusCode(HttpStatus.SC_OK)
+                .message("Search successful ")
+                .data(globalQueriesService.searchTypos(text))).build();
+    }
 }
