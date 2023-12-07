@@ -1,7 +1,7 @@
 package com.elk.services;
 
 import com.elk.Utils.UniqueIdUtils;
-import com.elk.exception.FailedToSaveExeption;
+import com.elk.exception.FailedToSaveException;
 import com.elk.mappers.AddressMapper;
 import com.elk.model.Address;
 import jakarta.enterprise.context.RequestScoped;
@@ -19,7 +19,7 @@ public class AddressService {
     @Inject
     private SqlSession sqlSession;
 
-    public Long createAddress(Address address) throws FailedToSaveExeption {
+    public Long createAddress(Address address) throws FailedToSaveException {
         long uniqueId = UniqueIdUtils.uniqueCurrentTimeNS();
         address.setId(uniqueId);
         try {
@@ -27,7 +27,7 @@ public class AddressService {
             addressMapper.saveAddress(address);
             sqlSession.commit();
         } catch (Exception e) {
-            throw new FailedToSaveExeption("Unable to save Address with id " + uniqueId);
+            throw new FailedToSaveException("Unable to save Address with id " + uniqueId);
         }
         return uniqueId;
     }

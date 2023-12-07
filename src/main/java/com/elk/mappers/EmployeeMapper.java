@@ -4,5 +4,5 @@ import com.elk.model.Employee;
 
 public interface EmployeeMapper {
 
-    int  saveEmployee(Employee employee);
+    public int saveEmployee(Employee employee);
 }

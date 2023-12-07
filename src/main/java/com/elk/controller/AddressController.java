@@ -1,6 +1,7 @@
 package com.elk.controller;
 
-import com.elk.exception.FailedToSaveExeption;
+
+import com.elk.exception.FailedToSaveException;
 import com.elk.model.Address;
 import com.elk.requestresponse.GenericResponse;
 import com.elk.services.AddressService;
@@ -21,7 +22,7 @@ public class AddressController {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createAddress(Address address) throws FailedToSaveExeption {
+    public Response createAddress(Address address) throws FailedToSaveException {
         return Response.ok(GenericResponse.builder()
                 .statusCode(HttpStatus.SC_CREATED)
                 .message("Address created successfully with id " + addressService.createAddress(address))

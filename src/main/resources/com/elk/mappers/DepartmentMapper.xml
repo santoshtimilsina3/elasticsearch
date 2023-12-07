@@ -3,18 +3,82 @@
         'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
 <mapper namespace="com.elk.mappers.DepartmentMapper">
 
-    <resultMap id="getDepartment" type="Department">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="createdAt" column="created_at"/>
+    <resultMap id="getDepartment" type="com.elk.model.Department">
+        <id property="id" column="department_id"/>
+        <result property="name" column="department_name"/>
+        <result property="createdAt" column="department_created_at"/>
+        <collection property="employees" ofType="com.elk.model.Employee">
+            <id property="id" column="employee_id" />
+            <result property="name" column="employee_name"/>
+            <result property="email" column="employee_email"/>
+            <result property="phone" column="employee_phone"/>
+            <result property="departmentId" column="employee_department_id"/>
+        </collection>
     </resultMap>
+
+    <select id="getDepartmentById" resultMap="getDepartment">
+        SELECT
+            d.id AS department_id,
+            d.name AS department_name,
+            d.created_at AS department_created_at,
+            e.id AS employee_id,
+            e.name AS employee_name,
+            e.email AS employee_email,
+            e.phone AS employee_phone,
+            e.department_id AS employee_department_id
+        FROM department d
+                 LEFT JOIN employee e ON d.id = e.department_id
+        WHERE d.id = #{id}
+    </select>
+
+<!--    -->
+<!--    <resultMap id="getDepartment" type="com.elk.model.Department">-->
+<!--        <id property="id" column="id"/>-->
+<!--        <result property="name" column="name"/>-->
+<!--        <result property="createdAt" column="created_at"/>-->
+<!--        <collection property="employees" javaType="List" ofType="com.elk.model.Employee">-->
+<!--            <id property="id" column="id" />-->
+<!--            <result property="name" column="name"/>-->
+<!--            <result property="email" column="email"/>-->
+<!--            <result property="phone" column="phone"/>-->
+<!--            <result property="departmentId" column="department_id"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+<!--    <select id="getDepartmentById" resultType="com.elk.model.Department" resultMap="getDepartment">-->
+<!--        select *-->
+<!--        from department  inner join employee  on-->
+<!--            department.id = employee.department_id-->
+<!--        where department.id = #{id}-->
+<!--    </select>-->
+
+<!--    <select id="getTeams" resultType="Team" resultMap="TeamMap">-->
+<!--        SELECT id, name, players.id as player_id, players.name as player_name-->
+<!--        FROM teams-->
+<!--                 JOIN players ON teams.id = players.team_id-->
+<!--    </select>-->
+<!--    <resultMap type="Team" id="TeamMap">-->
+<!--        <id property="mId" column="id"/>-->
+<!--        <result property="mName" column="name"/>-->
+<!--        <collection property="mTags" javaType="List" ofType="Player">-->
+<!--            <id property="player_id" column="mId"/>-->
+<!--            <result property="player_name" column="mName"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
     <insert id="saveDepartment" parameterType="com.elk.model.Department">
         insert into department (id, name, created_at)
         values (#{id}, #{name}, #{createdAt})
     </insert>
-    <select id="getDepartmentById" parameterType="Long" resultMap="getDepartment">
-        select *
+
+    <select id="checkLinkedEmployee" parameterType="Long" resultType="int">
+        select count(*)
+        from employee
+        where department_id = #{id}
+    </select>
+    <delete id="deleteDepartment" parameterType="Long" >
+        delete
         from department
         where id = #{id}
-    </select>
+    </delete>
 </mapper>

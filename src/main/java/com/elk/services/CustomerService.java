@@ -5,7 +5,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.elk.Utils.UniqueIdUtils;
-import com.elk.exception.FailedToSaveExeption;
+import com.elk.exception.FailedToSaveException;
 import com.elk.mappers.CustomerMapper;
 import com.elk.model.Address;
 import com.elk.model.Customer;
@@ -73,7 +73,7 @@ public class CustomerService {
             return uniqueId;
         }
         rollBackOperation(sqlSession, uniqueId);
-        throw new FailedToSaveExeption("Unable to save Customer Data");
+        throw new FailedToSaveException("Unable to save Customer Data");
     }
 
     private CompletableFuture<Boolean> saveInSecondaryDb(Customer customer) {
