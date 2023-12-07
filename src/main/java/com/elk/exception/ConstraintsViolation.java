@@ -1,15 +1,18 @@
 package com.elk.exception;
 
 
+import com.elk.requestresponse.GenericResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import org.apache.http.HttpStatus;
 
 import java.util.Set;
 
@@ -17,12 +20,13 @@ import java.util.Set;
 public class ConstraintsViolation implements ExceptionMapper<ConstraintViolationException> {
     @Context
     UriInfo uriInfo;
+
     @Override
     public Response toResponse(ConstraintViolationException exception) {
         Set<ConstraintViolation<?>> constraintViolations = exception.getConstraintViolations();
 
         final var jsonObject = Json.createObjectBuilder()
-                .add("host",uriInfo.getAbsolutePath().getHost())
+                .add("host", uriInfo.getAbsolutePath().getHost())
                 .add("resource", uriInfo.getAbsolutePath().getPath())
                 .add("title", "Validation Errors");
 
@@ -43,7 +47,9 @@ public class ConstraintsViolation implements ExceptionMapper<ConstraintViolation
         }
         JsonObject errorJsonEntity = jsonObject.add("errors", jsonArray.build()).build();
 
-        return Response.status(Response.Status.BAD_REQUEST).entity(errorJsonEntity).build();
+        return Response.status(HttpStatus.SC_BAD_REQUEST).entity(GenericResponse.builder()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .message(String.valueOf(errorJsonEntity))).type(MediaType.APPLICATION_JSON).build();
 
     }
 }

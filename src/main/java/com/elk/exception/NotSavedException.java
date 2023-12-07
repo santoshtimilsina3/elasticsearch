@@ -1,6 +1,8 @@
 package com.elk.exception;
 
-public class NotSavedException extends Exception {
+import java.io.Serializable;
+
+public class NotSavedException extends Exception implements Serializable {
     public NotSavedException(String message) {
         super(message);
     }
