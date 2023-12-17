@@ -35,7 +35,7 @@ public class GlobalQueriesService {
         try {
             SearchResponse<Map> newSearch = elasticsearchClient.search(
                     SearchRequest.of(
-                            builder -> builder.index("ind*")
+                            builder -> builder.index("*")
                                     .query(q ->
                                             q.multiMatch(m ->
                                                     m.query(text).fields(List.of("*"))))

@@ -27,6 +27,7 @@ public class DepartmentService {
     @Inject
     private SqlSession sqlSession;
 
+
     @Inject
     private ElasticsearchAsyncClient elasticsearchAsyncClient;
     private static final String DEPARTMENT_INDEX = "index_department";
@@ -41,6 +42,7 @@ public class DepartmentService {
                 throw new NotSavedException("Unable to save department");
             sqlSession.commit();
         } catch (Exception exception) {
+            logger.log(Level.INFO, "Unable to save department");
             throw new NotSavedException(exception.getMessage());
         }
         return uniqueId;
@@ -51,7 +53,6 @@ public class DepartmentService {
         try {
             DepartmentMapper departmentMapper = sqlSession.getMapper(DepartmentMapper.class);
             department = departmentMapper.getDepartmentById(id);
-            if (department.getId() == null) throw new NotFoundException("Unable to find the department with id " + id);
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to find department with id " + id);
             throw new NotFoundException("Unable to find the department with id " + id);
@@ -62,7 +63,8 @@ public class DepartmentService {
     public Long deleteDepartment(Long id) throws FailedToSaveException {
         DepartmentMapper departmentMapper = sqlSession.getMapper(DepartmentMapper.class);
         int checkLinkedEmployee = departmentMapper.checkLinkedEmployee(id);
-        if (checkLinkedEmployee > 0) throw new FailedToSaveException("There are already Employees linked with the department " + id);
+        if (checkLinkedEmployee > 0)
+            throw new FailedToSaveException("There are already Employees linked with the department " + id);
         int noOfRowDeleted = departmentMapper.deleteDepartment(id);
         if (noOfRowDeleted == 0) throw new DatabaseOperationFailed("Cannot find the department with id " + id);
         if (!deleteDeptInES(id)) {
@@ -83,4 +85,21 @@ public class DepartmentService {
             return false;
         }
     }
+
+    public Long updateDepartment(Department department) throws NotSavedException {
+        Department departmentById = getDepartmentById(department.getId());
+        if (departmentById.getId() == null)
+            throw new NotFoundException("Unable to find department with id " + department.getId());
+        try {
+            DepartmentMapper departmentMapper = sqlSession.getMapper(DepartmentMapper.class);
+            int noOfUpdatedDepartment = departmentMapper.updateDepartment(department);
+            sqlSession.commit();
+
+        } catch (Exception exception) {
+            throw new NotSavedException("Unable to update Department");
+        }
+        return departmentById.getId();
+    }
+
+
 }

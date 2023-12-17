@@ -31,51 +31,25 @@
         WHERE d.id = #{id}
     </select>
 
-<!--    -->
-<!--    <resultMap id="getDepartment" type="com.elk.model.Department">-->
-<!--        <id property="id" column="id"/>-->
-<!--        <result property="name" column="name"/>-->
-<!--        <result property="createdAt" column="created_at"/>-->
-<!--        <collection property="employees" javaType="List" ofType="com.elk.model.Employee">-->
-<!--            <id property="id" column="id" />-->
-<!--            <result property="name" column="name"/>-->
-<!--            <result property="email" column="email"/>-->
-<!--            <result property="phone" column="phone"/>-->
-<!--            <result property="departmentId" column="department_id"/>-->
-<!--        </collection>-->
-<!--    </resultMap>-->
-
-<!--    <select id="getDepartmentById" resultType="com.elk.model.Department" resultMap="getDepartment">-->
-<!--        select *-->
-<!--        from department  inner join employee  on-->
-<!--            department.id = employee.department_id-->
-<!--        where department.id = #{id}-->
-<!--    </select>-->
-
-<!--    <select id="getTeams" resultType="Team" resultMap="TeamMap">-->
-<!--        SELECT id, name, players.id as player_id, players.name as player_name-->
-<!--        FROM teams-->
-<!--                 JOIN players ON teams.id = players.team_id-->
-<!--    </select>-->
-<!--    <resultMap type="Team" id="TeamMap">-->
-<!--        <id property="mId" column="id"/>-->
-<!--        <result property="mName" column="name"/>-->
-<!--        <collection property="mTags" javaType="List" ofType="Player">-->
-<!--            <id property="player_id" column="mId"/>-->
-<!--            <result property="player_name" column="mName"/>-->
-<!--        </collection>-->
-<!--    </resultMap>-->
 
     <insert id="saveDepartment" parameterType="com.elk.model.Department">
         insert into department (id, name, created_at)
         values (#{id}, #{name}, #{createdAt})
     </insert>
 
+    <update id="updateDepartment" parameterType="Department">
+        UPDATE department SET
+        <if test="name != null">name = #{name},</if>
+        <if test="createdAt != null">created_at = #{createdAt}</if>
+        WHERE id = #{id}
+    </update>
+
     <select id="checkLinkedEmployee" parameterType="Long" resultType="int">
         select count(*)
         from employee
         where department_id = #{id}
     </select>
+
     <delete id="deleteDepartment" parameterType="Long" >
         delete
         from department

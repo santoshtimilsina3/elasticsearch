@@ -27,7 +27,6 @@ public class GlobalController {
                 .statusCode(HttpStatus.SC_OK)
                 .message("Search successful ")
                 .data(globalQueriesService.searchInApplication(text))).build();
-//        return Response.ok(globalQueriesService.searchInApplication(text), MediaType.APPLICATION_JSON).build();
     }
 
     @GET

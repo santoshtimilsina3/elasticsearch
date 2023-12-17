@@ -20,10 +20,6 @@ public class ProductController {
     @Inject
     private ProductService productService;
 
-    @GET
-    public Response getHello() {
-        return Response.ok().build();
-    }
 
     @POST
     public Response saveProduct(Product product) throws Exception {
@@ -49,7 +45,7 @@ public class ProductController {
     public Response getProductByName(@PathParam("name") String name) throws IOException {
         return Response.ok(GenericResponse.builder().data(productService.getProductByName(name))
                 .statusCode(HttpStatus.SC_OK)
-                .message("Product get sucessfully")
+                .message("Product get successfully")
         ).build();
     }
 

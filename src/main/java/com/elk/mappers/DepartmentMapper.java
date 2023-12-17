@@ -11,4 +11,6 @@ public interface DepartmentMapper {
     int checkLinkedEmployee(Long id);
 
    int  deleteDepartment(Long id);
+
+    int updateDepartment(Department department);
 }

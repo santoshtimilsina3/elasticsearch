@@ -17,6 +17,8 @@ import com.elk.model.Employee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.IOException;
@@ -37,9 +39,9 @@ public class EmployeeService {
     private SqlSession sqlSession;
     @Inject
     private ElasticsearchClient elasticsearchClient;
-
     @Inject
     private ElasticsearchAsyncClient elasticsearchAsyncClient;
+
     private static final String DEPARTMENT_INDEX = "index_department";
 
     public Long saveEmployee(Employee employee) throws Exception {
@@ -47,6 +49,8 @@ public class EmployeeService {
         employee.setId(uniqueId);
 
         Department isExists = departmentService.getDepartmentById(employee.getDepartmentId());
+        if (isExists.getId() == null)
+            throw new NotFoundException("Unable to found Department with id " + employee.getDepartmentId());
         CompletableFuture<Boolean> saveInPrimaryDb = saveInPrimaryDb(employee)
                 .exceptionally(throwable -> {
                     logger.log(Level.INFO, "Error while saving the Employee in mysql db");
@@ -59,11 +63,11 @@ public class EmployeeService {
             sqlSession.commit();
             return uniqueId;
         }
-        rollBackUpdate(sqlSession, employee);
+        rollBackUpdate(sqlSession,isExists,employee);
         throw new FailedToSaveException("Unable to save Employee Data ");
     }
 
-    private void rollBackUpdate(SqlSession sqlSession, Employee employee) throws IOException {
+    private void rollBackUpdate(SqlSession sqlSession,Department existedDepartment, Employee employee) throws IOException {
         sqlSession.rollback();
         Department department = departmentExists(employee.getDepartmentId());
         List<Employee> updateEmployee = department.getEmployees().stream().filter(employee1 -> !(employee1.getId().equals(employee.getId()))).collect(Collectors.toList());
@@ -136,4 +140,15 @@ public class EmployeeService {
         return departmentSearchResponse.hits().hits().stream().map(Hit::source).collect(Collectors.toList()).stream().findFirst().orElse(new Department());
     }
 
+    public Employee getEmployeeById(Long id){
+        Employee isEmployeeExists= new Employee();
+        EmployeeMapper employeeMapper = sqlSession.getMapper(EmployeeMapper.class);
+       isEmployeeExists  = employeeMapper.getEmployeeById(id);
+       return isEmployeeExists;
+    }
+    public Object updateEmployee(Employee employee) {
+        if(employee.getId()==null && (getEmployeeById(employee.getId()))==null) throw new NotFoundException("Cannot find employee Id");
+      getEmployeeById(employee.getId());
+      return null;
+    }
 }

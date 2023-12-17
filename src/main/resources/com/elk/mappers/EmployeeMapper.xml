@@ -2,8 +2,14 @@
 <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
         'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
 <mapper namespace="com.elk.mappers.EmployeeMapper">
-    <insert id="saveEmployee" parameterType="Employee" >
-        insert into employee(id,name,email,phone,department_id)
-        values(#{id},#{name},#{email},#{phone},#{departmentId})
+    <insert id="saveEmployee" parameterType="Employee">
+        insert into employee(id, name, email, phone, department_id)
+        values (#{id}, #{name}, #{email}, #{phone}, #{departmentId})
     </insert>
+
+    <select id="getEmployeeById" parameterType="Long" resultType="Employee">
+        SELECT *
+        from employee
+        where id = #{id}
+    </select>
 </mapper>
